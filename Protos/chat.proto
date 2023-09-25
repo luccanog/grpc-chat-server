@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+option csharp_namespace = "Chat.gRPC";
+
+package chat;
+
+service ChatService {
+  rpc HandleCommunication(stream ClientMessage) returns (stream ServerMessage);
+
+}
+
+message ClientMessage {
+  oneof content {
+	string chat_id = 1;
+	string user_name = 2;
+	string text = 3;
+  }
+}
+
+message ServerMessage {
+  oneof content {
+	ServerMessageLoginSuccess login_success = 1;
+	ServerMessageLoginFailure login_failure = 2;
+	ServerMessageUserJoined user_joined = 3;
+	ServerMessageChat chat = 4;
+  }
+}
+
+message ServerMessageLoginFailure {
+  string reason = 1;
+}
+
+message ServerMessageLoginSuccess {
+}
+
+message ServerMessageUserJoined {
+  string user_name = 1;
+}
+
+message ServerMessageChat {
+  string text = 1;
+  string user_name = 2;
+}
