@@ -1,4 +1,5 @@
 using Chat.gRPC.Services;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 namespace Chat
 {
@@ -12,7 +13,15 @@ namespace Chat
             // For instructions on how to configure Kestrel and gRPC clients on macOS, visit https://go.microsoft.com/fwlink/?linkid=2099682
 
             // Add services to the container.
+            builder.WebHost.ConfigureKestrel(options =>
+            {
+                // Setup a HTTP/2 endpoint without TLS.
+                options.ListenLocalhost(50051, o => o.Protocols =
+                    HttpProtocols.Http2);
+            });
+
             builder.Services.AddGrpc();
+            builder.Services.AddSingleton<ChatServer>();
 
             var app = builder.Build();
 

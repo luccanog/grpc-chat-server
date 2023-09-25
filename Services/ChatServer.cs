@@ -1,19 +1,19 @@
+using Grpc.Core;
+
 namespace Chat.gRPC.Services
 {
     public class ChatServer : ChatService.ChatServiceBase
     {
-        //private readonly ILogger<GreeterService> _logger;
-        //public GreeterService(ILogger<GreeterService> logger)
-        //{
-        //    _logger = logger;
-        //}
+        private readonly ILogger<ChatServer> _logger;
 
-        //public override Task<HelloReply> SayHello(HelloRequest request, ServerCallContext context)
-        //{
-        //    return Task.FromResult(new HelloReply
-        //    {
-        //        Message = "Hello " + request.Name
-        //    });
-        //}
+        public ChatServer(ILogger<ChatServer> logger)
+        {
+            _logger = logger;
+        }
+
+        public override Task HandleCommunication(IAsyncStreamReader<ClientMessage> requestStream, IServerStreamWriter<ServerMessage> responseStream, ServerCallContext context)
+        {
+            return base.HandleCommunication(requestStream, responseStream, context);
+        }
     }
 }
