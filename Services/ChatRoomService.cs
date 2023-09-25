@@ -30,7 +30,7 @@ namespace Chat.gRPC.Services
 
                 return requestStream.Current;
             }
-            catch (TimeoutException)
+            catch (OperationCanceledException)
             {
                 _logger.LogError($"{nameof(ReadMessageWithTimeoutAsync)} - Timeout");
                 throw;

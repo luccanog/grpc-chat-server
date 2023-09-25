@@ -6,15 +6,22 @@ package chat;
 
 service ChatService {
   rpc HandleCommunication(stream ClientMessage) returns (stream ServerMessage);
-
 }
 
 message ClientMessage {
   oneof content {
-	string chat_id = 1;
-	string user_name = 2;
-	string text = 3;
+	ClientMessageLogin login = 1;
+	ClientMessageChat chat = 2;
   }
+}
+
+message ClientMessageLogin {
+  string chat_room_id = 1;
+  string user_name = 2;
+}
+
+message ClientMessageChat {
+  string text = 1;
 }
 
 message ServerMessage {

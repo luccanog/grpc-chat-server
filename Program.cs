@@ -1,3 +1,4 @@
+using Chat.gRPC.Interceptors;
 using Chat.gRPC.Services;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 
@@ -12,17 +13,10 @@ namespace Chat
             // Additional configuration is required to successfully run gRPC on macOS.
             // For instructions on how to configure Kestrel and gRPC clients on macOS, visit https://go.microsoft.com/fwlink/?linkid=2099682
 
-            // Add services to the container.
-            builder.WebHost.ConfigureKestrel(options =>
-            {
-                // Setup a HTTP/2 endpoint without TLS.
-                options.ListenLocalhost(50051, o => o.Protocols =
-                    HttpProtocols.Http2);
-            });
-
-            builder.Services.AddGrpc();
-            builder.Services.AddSingleton<ChatRoomService>();
-
+            builder.Services.AddGrpc(options => options.Interceptors.Add<ExceptionInterceptor>());
+            builder.Services.AddSingleton<IChatRoomService, ChatRoomService>();
+            builder.Services.AddTransient<ILogger>(s=>s.GetService<ILogger<ExceptionInterceptor>>());
+            
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
