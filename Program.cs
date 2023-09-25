@@ -21,7 +21,7 @@ namespace Chat
             });
 
             builder.Services.AddGrpc();
-            builder.Services.AddSingleton<ChatServer>();
+            builder.Services.AddSingleton<ChatRoomService>();
 
             var app = builder.Build();
 
