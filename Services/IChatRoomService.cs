@@ -5,7 +5,7 @@ namespace Chat.gRPC.Services
 {
     public interface IChatRoomService
     {
-        public Task<ClientMessage> ReadMessageWithTimeoutAsync(IAsyncStreamReader<ClientMessage> requestStream, TimeSpan timeout);
+        public Task<ClientMessage> ReadMessageAsync(IAsyncStreamReader<ClientMessage> requestStream);
 
         public Task AddClientToChatRoomAsync(string chatRoomId, User user);
 

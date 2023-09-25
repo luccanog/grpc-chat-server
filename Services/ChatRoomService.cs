@@ -15,13 +15,11 @@ namespace Chat.gRPC.Services
             _chatRooms = new ConcurrentDictionary<string, List<User>>();
         }
 
-        public async Task<ClientMessage> ReadMessageWithTimeoutAsync(IAsyncStreamReader<ClientMessage> requestStream, TimeSpan timeout)
+        public async Task<ClientMessage> ReadMessageAsync(IAsyncStreamReader<ClientMessage> requestStream)
         {
-            CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(timeout);
-
             try
             {
-                bool isMovingNext = await requestStream.MoveNext(cancellationTokenSource.Token);
+                bool isMovingNext = await requestStream.MoveNext();
 
                 if (!isMovingNext)
                 {
@@ -32,12 +30,12 @@ namespace Chat.gRPC.Services
             }
             catch (OperationCanceledException)
             {
-                _logger.LogError($"{nameof(ReadMessageWithTimeoutAsync)} - Timeout");
+                _logger.LogError($"{nameof(ReadMessageAsync)} - Timeout");
                 throw;
             }
             catch (Exception ex)
             {
-                _logger.LogError($"{nameof(ReadMessageWithTimeoutAsync)} - Error: {ex.Message}");
+                _logger.LogError($"{nameof(ReadMessageAsync)} - Error: {ex.Message}");
                 throw;
             }
         }

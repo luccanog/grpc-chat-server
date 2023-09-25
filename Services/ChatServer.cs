@@ -20,7 +20,7 @@ namespace Chat.gRPC.Services
 
             while (true)
             {
-                var clientMessage = await _chatRoomService.ReadMessageWithTimeoutAsync(requestStream, TimeSpan.FromSeconds(ReadMessageTimeout));
+                var clientMessage = await _chatRoomService.ReadMessageAsync(requestStream);
 
                 switch (clientMessage.ContentCase)
                 {
