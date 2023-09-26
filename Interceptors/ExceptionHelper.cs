@@ -1,4 +1,6 @@
 ﻿using Grpc.Core;
+using Serilog;
+using System;
 
 namespace Chat.gRPC.Interceptors
 {
@@ -14,7 +16,7 @@ namespace Chat.gRPC.Interceptors
 
         private static RpcException HandleTimeoutException(TimeoutException exception, ServerCallContext context, ILogger logger, Guid correlationId)
         {
-            logger.LogError(correlationId.ToString(), exception, context.Method);
+            logger.Error(correlationId.ToString(), exception, context.Method);
 
             var status = new Status(StatusCode.Internal, exception.Message);
 
@@ -23,13 +25,13 @@ namespace Chat.gRPC.Interceptors
 
         private static RpcException HandleRpcException(RpcException exception, ServerCallContext context, ILogger logger, Guid correlationId)
         {
-            logger.LogError(correlationId.ToString(), exception, context.Method);
+            logger.Error(correlationId.ToString(), exception, context.Method);
             return new RpcException(new Status(exception.StatusCode, exception.Message), BuildResponseMetadata(correlationId));
         }
 
         private static RpcException HandleDefault(Exception exception, ServerCallContext context, ILogger logger, Guid correlationId)
         {
-            logger.LogError(correlationId.ToString(), exception, context.Method);
+            logger.Error(correlationId.ToString(), exception, context.Method);
             return new RpcException(new Status(StatusCode.Internal, exception.Message), BuildResponseMetadata(correlationId));
         }
 

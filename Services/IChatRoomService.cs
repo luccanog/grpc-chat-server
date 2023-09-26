@@ -1,5 +1,6 @@
 ﻿using Chat.gRPC.Models;
 using Grpc.Core;
+using System.Threading.Tasks;
 
 namespace Chat.gRPC.Services
 {

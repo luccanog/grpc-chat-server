@@ -1,17 +1,22 @@
 ﻿using Chat.gRPC.Models;
 using Grpc.Core;
+using Serilog;
+using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Chat.gRPC.Services
 {
     public class ChatRoomService : IChatRoomService
     {
-        private readonly ILogger<ChatRoomService> _logger;
+        private readonly ILogger _logger;
         private readonly ConcurrentDictionary<string, List<User>> _chatRooms;
 
-        public ChatRoomService(ILogger<ChatRoomService> logger)
+        public ChatRoomService(ILogger logger)
         {
-            _logger = logger;
+            _logger = logger.ForContext<ChatRoomService>();
             _chatRooms = new ConcurrentDictionary<string, List<User>>();
         }
 
@@ -30,12 +35,12 @@ namespace Chat.gRPC.Services
             }
             catch (OperationCanceledException)
             {
-                _logger.LogError($"{nameof(ReadMessageAsync)} - Timeout");
+                _logger.Error($"{nameof(ReadMessageAsync)} - Timeout");
                 throw;
             }
             catch (Exception ex)
             {
-                _logger.LogError($"{nameof(ReadMessageAsync)} - Error: {ex.Message}");
+                _logger.Error($"{nameof(ReadMessageAsync)} - Error: {ex.Message}");
                 throw;
             }
         }

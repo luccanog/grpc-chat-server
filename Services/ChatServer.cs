@@ -1,4 +1,5 @@
 using Grpc.Core;
+using System.Threading.Tasks;
 
 namespace Chat.gRPC.Services
 {
@@ -6,9 +7,7 @@ namespace Chat.gRPC.Services
     {
         private readonly IChatRoomService _chatRoomService;
 
-        private const int ReadMessageTimeout = 5;
-
-        public ChatServer(ILogger<ChatServer> logger, IChatRoomService chatRoomService)
+        public ChatServer(IChatRoomService chatRoomService)
         {
             _chatRoomService = chatRoomService;
         }

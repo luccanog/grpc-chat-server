@@ -1,5 +1,8 @@
 ﻿using Grpc.Core;
 using Grpc.Core.Interceptors;
+using Serilog;
+using System;
+using System.Threading.Tasks;
 
 namespace Chat.gRPC.Interceptors
 {
@@ -10,7 +13,7 @@ namespace Chat.gRPC.Interceptors
 
         public ExceptionInterceptor(ILogger logger)
         {
-            _logger = new Logger<ExceptionInterceptor>(new LoggerFactory());
+            _logger = logger.ForContext<ExceptionInterceptor>();
             _correlationId = Guid.NewGuid();
         }
 
