@@ -13,8 +13,7 @@ namespace Chat.gRPC.Tests.Services
         
         public ChatRoomServiceTests()
         {
-            var logger = new LoggerConfiguration().MinimumLevel.Debug().WriteTo.TestCorrelator().CreateLogger();
-            _chatRoomService = new ChatRoomService(logger);
+            _chatRoomService = new ChatRoomService();
         }
 
         [Fact]
