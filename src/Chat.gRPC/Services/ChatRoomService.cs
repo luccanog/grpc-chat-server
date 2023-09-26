@@ -4,6 +4,7 @@ using Serilog;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -11,33 +12,11 @@ namespace Chat.gRPC.Services
 {
     public class ChatRoomService : IChatRoomService
     {
-        private readonly ILogger _logger;
         private readonly ConcurrentDictionary<string, List<User>> _chatRooms;
 
         public ChatRoomService(ILogger logger)
         {
-            _logger = logger.ForContext<ChatRoomService>();
             _chatRooms = new ConcurrentDictionary<string, List<User>>();
-        }
-
-        public async Task<ClientMessage> ReadMessageAsync(IAsyncStreamReader<ClientMessage> requestStream)
-        {
-            try
-            {
-                bool isMovingNext = await requestStream.MoveNext();
-
-                if (!isMovingNext)
-                {
-                    throw new Exception("Connection dropped");
-                }
-
-                return requestStream.Current;
-            }
-            catch (Exception)
-            {
-                _logger.Error($"{nameof(ReadMessageAsync)}");
-                throw;
-            }
         }
 
         public async Task AddClientToChatRoomAsync(string chatRoomId, User user)
@@ -96,5 +75,7 @@ namespace Chat.gRPC.Services
                 await Task.WhenAll(tasks);
             }
         }
+
+        public ReadOnlyCollection<string> ListChatRooms() => new ReadOnlyCollection<string>(_chatRooms.Keys.ToList());
     }
 }

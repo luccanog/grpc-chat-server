@@ -1,6 +1,7 @@
 ﻿using AutoFixture;
 using Chat.gRPC.Models;
 using Chat.gRPC.Services;
+using Grpc.Core;
 using Serilog;
 
 
@@ -22,15 +23,15 @@ namespace Chat.gRPC.Tests.Services
         {
             //Arrange
             var chatRoomId = Guid.NewGuid().ToString();
-            var user = _fixture.Create<User>();
+            var user = new User("John Doe", new Mock<IServerStreamWriter<ServerMessage>>().Object);
 
             //Act
             await _chatRoomService.AddClientToChatRoomAsync(chatRoomId, user);
 
             //Assert
-            
-
-            await Task.CompletedTask;
+            var rooms = _chatRoomService.ListChatRooms();
+            rooms.Should().HaveCount(1);
+            rooms.First().Should().Be(chatRoomId);
         }
     }
 }

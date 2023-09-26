@@ -1,4 +1,6 @@
 using Grpc.Core;
+using Serilog;
+using System;
 using System.Threading.Tasks;
 
 namespace Chat.gRPC.Services
@@ -6,9 +8,11 @@ namespace Chat.gRPC.Services
     public class ChatServer : ChatService.ChatServiceBase
     {
         private readonly IChatRoomService _chatRoomService;
+        private readonly ILogger _logger;
 
-        public ChatServer(IChatRoomService chatRoomService)
+        public ChatServer(ILogger logger, IChatRoomService chatRoomService)
         {
+            _logger = logger.ForContext<ChatServer>();
             _chatRoomService = chatRoomService;
         }
 
@@ -19,7 +23,7 @@ namespace Chat.gRPC.Services
 
             while (true)
             {
-                var clientMessage = await _chatRoomService.ReadMessageAsync(requestStream);
+                var clientMessage = await ReadMessageAsync(requestStream);
 
                 switch (clientMessage.ContentCase)
                 {
@@ -41,6 +45,26 @@ namespace Chat.gRPC.Services
                         await _chatRoomService.StreamServerMessageAsync(chatRoomId, userName, clientMessage.Chat.Text);
                         break;
                 }
+            }
+        }
+
+        private async Task<ClientMessage> ReadMessageAsync(IAsyncStreamReader<ClientMessage> requestStream)
+        {
+            try
+            {
+                bool isMovingNext = await requestStream.MoveNext();
+
+                if (!isMovingNext)
+                {
+                    throw new Exception("Connection dropped");
+                }
+
+                return requestStream.Current;
+            }
+            catch (Exception exception)
+            {
+                _logger.Error($"{nameof(ReadMessageAsync)}", exception.Message);
+                throw;
             }
         }
 
