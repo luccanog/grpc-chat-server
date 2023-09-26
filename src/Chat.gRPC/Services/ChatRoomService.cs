@@ -40,22 +40,24 @@ namespace Chat.gRPC.Services
 
         public async Task StreamClientJoinedRoomServerMessageAsync(string chatRoomId, string userName)
         {
-            if (_chatRooms.ContainsKey(chatRoomId))
+            if (!_chatRooms.ContainsKey(chatRoomId))
             {
-                var serverMessage = new ServerMessage { UserJoined = new ServerMessageUserJoined { UserName = userName } };
-
-                var tasks = new List<Task>();
-
-                foreach (var user in _chatRooms[chatRoomId])
-                {
-                    if (user is not null)
-                    {
-                        tasks.Add(user.StreamWriter.WriteAsync(serverMessage));
-                    }
-                }
-
-                await Task.WhenAll(tasks);
+                throw new InvalidOperationException("This chat room Id does not exist");
             }
+
+            var serverMessage = new ServerMessage { UserJoined = new ServerMessageUserJoined { UserName = userName } };
+
+            var tasks = new List<Task>();
+
+            foreach (var user in _chatRooms[chatRoomId])
+            {
+                if (user is not null)
+                {
+                    tasks.Add(user.StreamWriter.WriteAsync(serverMessage));
+                }
+            }
+
+            await Task.WhenAll(tasks);
         }
 
         public async Task StreamServerMessageAsync(string chatRoomId, string senderName, string message)
