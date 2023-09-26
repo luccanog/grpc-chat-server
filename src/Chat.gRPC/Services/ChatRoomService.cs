@@ -14,7 +14,7 @@ namespace Chat.gRPC.Services
     {
         private readonly ConcurrentDictionary<string, List<User>> _chatRooms;
 
-        public ChatRoomService(ILogger logger)
+        public ChatRoomService()
         {
             _chatRooms = new ConcurrentDictionary<string, List<User>>();
         }
