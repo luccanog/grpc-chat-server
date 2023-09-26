@@ -1,9 +1,7 @@
-﻿using AutoFixture;
-using Chat.gRPC.Models;
+﻿using Chat.gRPC.Models;
 using Chat.gRPC.Services;
 using Grpc.Core;
-using NuGet.Frameworks;
-using Serilog;
+
 
 
 namespace Chat.gRPC.Tests.Services

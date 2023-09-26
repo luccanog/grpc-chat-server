@@ -1,5 +1,4 @@
 ﻿using Chat.gRPC.Models;
-using Grpc.Core;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 

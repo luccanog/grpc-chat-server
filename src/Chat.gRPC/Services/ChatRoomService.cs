@@ -1,6 +1,4 @@
 ﻿using Chat.gRPC.Models;
-using Grpc.Core;
-using Serilog;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
