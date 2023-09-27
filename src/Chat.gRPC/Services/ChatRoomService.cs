@@ -61,20 +61,22 @@ namespace Chat.gRPC.Services
 
         public async Task StreamServerMessageAsync(string chatRoomId, string senderName, string message)
         {
-            if (_chatRooms.ContainsKey(chatRoomId))
+            if (!_chatRooms.ContainsKey(chatRoomId))
             {
-                var tasks = new List<Task>();
-                var serverMessage = new ServerMessage { Chat = new ServerMessageChat { UserName = senderName, Text = message } };
-
-                foreach (var user in _chatRooms[chatRoomId])
-                {
-                    if (user is not null && user.Name != senderName)
-                    {
-                        tasks.Add(user.StreamWriter.WriteAsync(serverMessage));
-                    }
-                }
-                await Task.WhenAll(tasks);
+                throw new InvalidOperationException("This chat room Id does not exist");
             }
+
+            var tasks = new List<Task>();
+            var serverMessage = new ServerMessage { Chat = new ServerMessageChat { UserName = senderName, Text = message } };
+
+            foreach (var user in _chatRooms[chatRoomId])
+            {
+                if (user is not null && user.Name != senderName)
+                {
+                    tasks.Add(user.StreamWriter.WriteAsync(serverMessage));
+                }
+            }
+            await Task.WhenAll(tasks);
         }
 
         public ReadOnlyCollection<string> ListChatRooms() => new ReadOnlyCollection<string>(_chatRooms.Keys.ToList());

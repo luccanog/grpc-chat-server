@@ -10,7 +10,7 @@ namespace Chat.gRPC.Tests.Services
     public class ChatRoomServiceTests
     {
         private readonly IChatRoomService _chatRoomService;
-        private readonly Mock<IServerStreamWriter<ServerMessage>> _serverStreamWriterMock;
+        private readonly Mock<IServerStreamWriter<ServerMessage>> _defaultServerStreamWriterMock;
 
         private const string DefaultName = "John Doe";
         private readonly User _defaultUser;
@@ -18,8 +18,8 @@ namespace Chat.gRPC.Tests.Services
         public ChatRoomServiceTests()
         {
             _chatRoomService = new ChatRoomService();
-            _serverStreamWriterMock = new Mock<IServerStreamWriter<ServerMessage>>();
-            _defaultUser = new User(DefaultName, _serverStreamWriterMock.Object);
+            _defaultServerStreamWriterMock = new Mock<IServerStreamWriter<ServerMessage>>();
+            _defaultUser = new User(DefaultName, _defaultServerStreamWriterMock.Object);
         }
 
         [Fact]
@@ -44,7 +44,7 @@ namespace Chat.gRPC.Tests.Services
             var chatRoomId = Guid.NewGuid().ToString();
             await _chatRoomService.AddClientToChatRoomAsync(chatRoomId, _defaultUser);
 
-            var secondUser = new User($"{DefaultName}123", _serverStreamWriterMock.Object);
+            var secondUser = new User($"{DefaultName}123", _defaultServerStreamWriterMock.Object);
 
             //Act
             await _chatRoomService.AddClientToChatRoomAsync(chatRoomId, secondUser);
@@ -82,7 +82,7 @@ namespace Chat.gRPC.Tests.Services
             await _chatRoomService.StreamClientJoinedRoomServerMessageAsync(chatRoomId, _defaultUser.Name);
 
             //Assert
-            _serverStreamWriterMock.Verify(s => s.WriteAsync(expectedMessage), Times.Once);
+            _defaultServerStreamWriterMock.Verify(s => s.WriteAsync(expectedMessage), Times.Once);
         }
 
         [Fact]
@@ -94,6 +94,39 @@ namespace Chat.gRPC.Tests.Services
 
             //Assert
             exception.Should().BeAssignableTo<InvalidOperationException>();
+        }
+
+        [Fact]
+        public async Task StreamServerMessageAsync_WhenChatRoomDoesNotExist_ShouldFail()
+        {
+            //Act
+            var act = async () => await _chatRoomService.StreamServerMessageAsync("inexistent-chat-room", _defaultUser.Name, "dummy message");
+            var exception = await Record.ExceptionAsync(act);
+
+            //Assert
+            exception.Should().BeAssignableTo<InvalidOperationException>();
+        }
+
+        [Fact]
+        public async Task StreamServerMessageAsync_UserShouldNotReceiveYourOwnMessage()
+        {
+            //Arrange
+            var chatRoomId = Guid.NewGuid().ToString();
+            var messageText = "dummy message";
+
+            var expectedMessage = new ServerMessage { Chat = new ServerMessageChat { UserName = _defaultUser.Name, Text = messageText } };
+            var recipientUserServerStreamWriter = new Mock<IServerStreamWriter<ServerMessage>>();
+            var recipientUser = new User("John", recipientUserServerStreamWriter.Object);
+
+            await _chatRoomService.AddClientToChatRoomAsync(chatRoomId, _defaultUser);
+            await _chatRoomService.AddClientToChatRoomAsync(chatRoomId, recipientUser);
+
+            //Act
+            await _chatRoomService.StreamServerMessageAsync(chatRoomId, _defaultUser.Name, messageText);
+
+            //Assert
+            _defaultServerStreamWriterMock.Verify(s => s.WriteAsync(It.IsAny<ServerMessage>()), Times.Never);
+            recipientUserServerStreamWriter.Verify(s => s.WriteAsync(expectedMessage), Times.Once);
 
         }
     }
