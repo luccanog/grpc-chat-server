@@ -42,8 +42,10 @@ namespace Chat.gRPC.Interceptors
         /// <returns></returns>
         private static Metadata BuildResponseMetadata(Guid correlationId)
         {
-            var trailers = new Metadata();
-            trailers.Add("CorrelationId", correlationId.ToString());
+            var trailers = new Metadata
+            {
+                { "CorrelationId", correlationId.ToString() }
+            };
             return trailers;
         }
     }
