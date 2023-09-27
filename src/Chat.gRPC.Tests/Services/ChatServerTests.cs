@@ -88,6 +88,28 @@ namespace Chat.gRPC.Tests.Services
             _chatRoomServiceMock.Verify(c => c.StreamServerMessageAsync(chatRoomId, Constants.DefaultName, messageContent), Times.Once);
         }
 
+        [Fact]
+        public async Task HandleCommunication_SendMessageWithoutLoggingFirst_ShouldFail()
+        {
+            //Arrange
+            var chatRoomId = Guid.NewGuid().ToString();
+            var messageContent = "dummy message";
+            ServerCallContext context = SetupGrpcAuthenticationMocks();
+
+            _requestStreamMock.SetupSequence(r => r.MoveNext(It.IsAny<CancellationToken>()))
+                              .ReturnsAsync(true)
+                              .ReturnsAsync(false);
+
+            _requestStreamMock.SetupSequence(r => r.Current)
+                              .Returns(new ClientMessage() { Chat = new ClientMessageChat() { Text = messageContent } });
+
+            //Act
+            await _chatServer.HandleCommunication(_requestStreamMock.Object, _responseStreamMock.Object, context);
+
+            //Assert
+            _chatRoomServiceMock.Verify(c => c.StreamServerMessageAsync(chatRoomId, Constants.DefaultName, messageContent), Times.Never);
+        }
+
         private ServerCallContext SetupGrpcAuthenticationMocks()
         {
             var serverCallContext = TestServerCallContext.Create(String.Empty, String.Empty, DateTime.Now,
