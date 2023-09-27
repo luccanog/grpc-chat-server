@@ -1,4 +1,5 @@
 ﻿using Chat.gRPC.Models;
+using Chat.gRPC.Protos;
 using Chat.gRPC.Services;
 using Grpc.Core;
 

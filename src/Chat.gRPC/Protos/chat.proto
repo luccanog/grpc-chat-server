@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option csharp_namespace = "Chat.gRPC";
+option csharp_namespace = "Chat.gRPC.Protos";
 
 package chat;
 

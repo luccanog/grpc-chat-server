@@ -1,4 +1,5 @@
-﻿using Grpc.Core;
+﻿using Chat.gRPC.Protos;
+using Grpc.Core;
 
 namespace Chat.gRPC.Models
 {

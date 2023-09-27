@@ -1,4 +1,5 @@
 ﻿using Chat.gRPC.Models;
+using Chat.gRPC.Protos;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
