@@ -10,14 +10,13 @@ namespace Chat.gRPC.Tests.Services
         private readonly IChatRoomService _chatRoomService;
         private readonly Mock<IServerStreamWriter<ServerMessage>> _defaultServerStreamWriterMock;
 
-        private const string DefaultName = "John Doe";
         private readonly User _defaultUser;
 
         public ChatRoomServiceTests()
         {
             _chatRoomService = new ChatRoomService();
             _defaultServerStreamWriterMock = new Mock<IServerStreamWriter<ServerMessage>>();
-            _defaultUser = new User(DefaultName, _defaultServerStreamWriterMock.Object);
+            _defaultUser = new User(Constants.DefaultName, _defaultServerStreamWriterMock.Object);
         }
 
         [Fact]
@@ -42,7 +41,7 @@ namespace Chat.gRPC.Tests.Services
             var chatRoomId = Guid.NewGuid().ToString();
             await _chatRoomService.AddClientToChatRoomAsync(chatRoomId, _defaultUser);
 
-            var secondUser = new User($"{DefaultName}123", _defaultServerStreamWriterMock.Object);
+            var secondUser = new User($"{Constants.DefaultName}123", _defaultServerStreamWriterMock.Object);
 
             //Act
             await _chatRoomService.AddClientToChatRoomAsync(chatRoomId, secondUser);

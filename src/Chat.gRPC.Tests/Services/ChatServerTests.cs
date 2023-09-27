@@ -31,13 +31,33 @@ namespace Chat.gRPC.Tests.Services
             ServerCallContext context = SetupGrpcAuthenticationMocks();
 
             _requestStreamMock.SetupSequence(r => r.MoveNext(It.IsAny<CancellationToken>())).ReturnsAsync(true).ReturnsAsync(false);
-            _requestStreamMock.Setup(r => r.Current).Returns(new ClientMessage() { Login = new ClientMessageLogin() { ChatRoomId = chatRoomId, UserName = "John Doe" } });
+            _requestStreamMock.Setup(r => r.Current).Returns(new ClientMessage() { Login = new ClientMessageLogin() { ChatRoomId = chatRoomId, UserName = Constants.DefaultName } });
 
             //Act
             await _chatServer.HandleCommunication(_requestStreamMock.Object, _responseStreamMock.Object, context);
 
             //Assert
             _chatRoomServiceMock.Verify(c => c.AddClientToChatRoomAsync(chatRoomId, It.IsAny<User>()), Times.Once);
+            _chatRoomServiceMock.Verify(c => c.StreamClientJoinedRoomServerMessageAsync(chatRoomId, Constants.DefaultName), Times.Once);
+        }
+
+        [Fact]
+        public async Task HandleCommunication_LoginWithEmptyUserName_ShouldFail()
+        {
+            //Arrange
+            var chatRoomId = Guid.NewGuid().ToString();
+            ServerCallContext context = SetupGrpcAuthenticationMocks();
+
+            _requestStreamMock.SetupSequence(r => r.MoveNext(It.IsAny<CancellationToken>())).ReturnsAsync(true).ReturnsAsync(false);
+            _requestStreamMock.Setup(r => r.Current).Returns(new ClientMessage() { Login = new ClientMessageLogin() { ChatRoomId = chatRoomId, UserName = string.Empty } });
+
+            //Act
+            await _chatServer.HandleCommunication(_requestStreamMock.Object, _responseStreamMock.Object, context);
+
+            //Assert
+            _chatRoomServiceMock.Verify(c => c.AddClientToChatRoomAsync(chatRoomId, It.IsAny<User>()), Times.Never);
+            _chatRoomServiceMock.Verify(c => c.StreamClientJoinedRoomServerMessageAsync(chatRoomId, It.IsAny<string>()), Times.Never);
+
         }
 
         private ServerCallContext SetupGrpcAuthenticationMocks()
