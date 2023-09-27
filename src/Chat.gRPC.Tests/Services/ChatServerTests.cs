@@ -24,7 +24,7 @@ namespace Chat.gRPC.Tests.Services
         }
 
         [Fact]
-        public async Task HandleCommunication_LoginWithValidData_ShouldWork()
+        public async Task HandleCommunication_LoginWithValidData_ShouldSucceed()
         {
             //Arrange
             var chatRoomId = Guid.NewGuid().ToString();
@@ -48,8 +48,12 @@ namespace Chat.gRPC.Tests.Services
             var chatRoomId = Guid.NewGuid().ToString();
             ServerCallContext context = SetupGrpcAuthenticationMocks();
 
-            _requestStreamMock.SetupSequence(r => r.MoveNext(It.IsAny<CancellationToken>())).ReturnsAsync(true).ReturnsAsync(false);
-            _requestStreamMock.Setup(r => r.Current).Returns(new ClientMessage() { Login = new ClientMessageLogin() { ChatRoomId = chatRoomId, UserName = string.Empty } });
+            _requestStreamMock.SetupSequence(r => r.MoveNext(It.IsAny<CancellationToken>()))
+                              .ReturnsAsync(true)
+                              .ReturnsAsync(false);
+
+            _requestStreamMock.Setup(r => r.Current)
+                              .Returns(new ClientMessage() { Login = new ClientMessageLogin() { ChatRoomId = chatRoomId, UserName = string.Empty } });
 
             //Act
             await _chatServer.HandleCommunication(_requestStreamMock.Object, _responseStreamMock.Object, context);
@@ -58,6 +62,30 @@ namespace Chat.gRPC.Tests.Services
             _chatRoomServiceMock.Verify(c => c.AddClientToChatRoomAsync(chatRoomId, It.IsAny<User>()), Times.Never);
             _chatRoomServiceMock.Verify(c => c.StreamClientJoinedRoomServerMessageAsync(chatRoomId, It.IsAny<string>()), Times.Never);
 
+        }
+
+        [Fact]
+        public async Task HandleCommunication_SendMessageAsLoggedUser_ShouldSucceed()
+        {
+            //Arrange
+            var chatRoomId = Guid.NewGuid().ToString();
+            var messageContent = "dummy message";
+            ServerCallContext context = SetupGrpcAuthenticationMocks();
+
+            _requestStreamMock.SetupSequence(r => r.MoveNext(It.IsAny<CancellationToken>()))
+                              .ReturnsAsync(true)
+                              .ReturnsAsync(true)
+                              .ReturnsAsync(false);
+
+            _requestStreamMock.SetupSequence(r => r.Current)
+                              .Returns(new ClientMessage() { Login = new ClientMessageLogin() { ChatRoomId = chatRoomId, UserName = Constants.DefaultName } })
+                              .Returns(new ClientMessage() { Chat = new ClientMessageChat() { Text = messageContent } });
+
+            //Act
+            await _chatServer.HandleCommunication(_requestStreamMock.Object, _responseStreamMock.Object, context);
+
+            //Assert
+            _chatRoomServiceMock.Verify(c => c.StreamServerMessageAsync(chatRoomId, Constants.DefaultName, messageContent), Times.Once);
         }
 
         private ServerCallContext SetupGrpcAuthenticationMocks()
