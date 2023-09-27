@@ -1,8 +1,5 @@
 using Chat.gRPC.Protos;
 using Grpc.Core;
-using Serilog;
-using System;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Chat.gRPC.Services
