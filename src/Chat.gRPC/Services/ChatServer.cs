@@ -8,11 +8,9 @@ namespace Chat.gRPC.Services
     public class ChatServer : ChatService.ChatServiceBase
     {
         private readonly IChatRoomService _chatRoomService;
-        private readonly ILogger _logger;
 
-        public ChatServer(ILogger logger, IChatRoomService chatRoomService)
+        public ChatServer(IChatRoomService chatRoomService)
         {
-            _logger = logger.ForContext<ChatServer>();
             _chatRoomService = chatRoomService;
         }
 
