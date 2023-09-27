@@ -1,6 +1,8 @@
 using Chat.gRPC.Protos;
 using Grpc.Core;
 using Serilog;
+using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Chat.gRPC.Services
@@ -19,7 +21,7 @@ namespace Chat.gRPC.Services
             string userName = string.Empty;
             string chatRoomId = string.Empty;
 
-            while (await requestStream.MoveNext())
+            while (await requestStream.MoveNext(context.CancellationToken))
             {
                 var clientMessage = requestStream.Current;
 

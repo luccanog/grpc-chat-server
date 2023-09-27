@@ -3,8 +3,6 @@ using Chat.gRPC.Protos;
 using Chat.gRPC.Services;
 using Grpc.Core;
 
-
-
 namespace Chat.gRPC.Tests.Services
 {
     public class ChatRoomServiceTests
