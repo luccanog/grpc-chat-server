@@ -1,6 +1,6 @@
 # grpc-chat-server
 
-![Project Logo/Image]
+<img src='https://github.com/luccanog/grpc-chat-server/assets/55986783/bc925aa5-19e1-4bd4-b390-148c54ef5e40' width='256'>
 
 ## Overview
 
@@ -48,3 +48,5 @@ docker build -t grpc-chat-server .
 docker run grpc-chat-server
 ```
 
+##
+<a href="https://iconscout.com/icons/chat" class="text-underline font-size-sm" target="_blank">Free Chat  Icon</a> by <a href="https://iconscout.com/contributors/iconic" class="text-underline font-size-sm" target="_blank">Iconic .</a>
