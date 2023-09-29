@@ -1,4 +1,5 @@
 #!/bin/sh
 set -e
+echo '## entrypoint.sh script executing ##'
 service ssh start
-dotnet Chat.gRPC.dll
+dotnet bin/Release/net7.0/Chat.gRPC.dll
