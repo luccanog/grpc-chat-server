@@ -5,7 +5,7 @@ VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Chat.gRPC", "Chat.gRPC\Chat.gRPC.csproj", "{08958B6E-1766-4530-9763-2BE000FED643}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chat.gRPC.Tests", "Chat.gRPC.Tests\Chat.gRPC.Tests.csproj", "{CB0FF548-F68D-4ABF-9F9C-4E32059B5B16}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Chat.gRPC.Tests", "Chat.gRPC.Tests\Chat.gRPC.Tests.csproj", "{CB0FF548-F68D-4ABF-9F9C-4E32059B5B16}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
