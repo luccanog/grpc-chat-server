@@ -4,7 +4,7 @@ EXPOSE 80
 EXPOSE 443
 
 # Copy everything
-COPY . ./
+COPY ./src/Chat.gRPC/ ./
 # Restore as distinct layers
 RUN dotnet restore
 # Build and publish a release
