@@ -14,5 +14,5 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Build the Docker image
-      run: docker build . --file ./src/Chat.gRPC/Dockerfile --tag grpc-chat-server:$(date +%s)
+    - name: Build Chat.gRPC.csproj Docker image
+      run: cd ./src/Chat.gRPC/ && docker build . --file Dockerfile --tag grpc-chat-server:$(date +%s)
