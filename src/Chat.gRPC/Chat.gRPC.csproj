@@ -6,7 +6,7 @@
     <ImplicitUsings>disable</ImplicitUsings>
     <UserSecretsId>a740c218-16b4-40e3-9b74-213c1ee1b6c2</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <DockerfileContext>.</DockerfileContext>
+    <DockerfileContext>..\..</DockerfileContext>
   </PropertyGroup>
 
   <ItemGroup>
