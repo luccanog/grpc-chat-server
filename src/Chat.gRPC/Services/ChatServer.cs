@@ -1,5 +1,6 @@
 using Chat.gRPC.Protos;
 using Grpc.Core;
+using Serilog;
 using System.Threading.Tasks;
 
 namespace Chat.gRPC.Services
@@ -7,14 +8,18 @@ namespace Chat.gRPC.Services
     public class ChatServer : ChatService.ChatServiceBase
     {
         private readonly IChatRoomService _chatRoomService;
+        private readonly ILogger _logger;
 
-        public ChatServer(IChatRoomService chatRoomService)
+        public ChatServer(IChatRoomService chatRoomService, ILogger logger)
         {
             _chatRoomService = chatRoomService;
+            _logger = logger;
         }
 
         public override async Task HandleCommunication(IAsyncStreamReader<ClientMessage> requestStream, IServerStreamWriter<ServerMessage> responseStream, ServerCallContext context)
         {
+            _logger.Information("Connection stablished");
+
             string userName = string.Empty;
             string chatRoomId = string.Empty;
 
@@ -27,14 +32,19 @@ namespace Chat.gRPC.Services
                     case ClientMessage.ContentOneofCase.Login:
                         userName = clientMessage.Login.UserName;
                         chatRoomId = clientMessage.Login.ChatRoomId;
+                        _logger.Information("Login message received from {userName}", userName);
+
                         if (!await IsInformationValid(responseStream, userName, chatRoomId, "Invalid username or chat room"))
                         {
                             return;
                         }
+
                         await HandleLogin(responseStream, userName, chatRoomId);
                         break;
 
                     case ClientMessage.ContentOneofCase.Chat:
+                        _logger.Information("Chat message received from {userName}", userName);
+
                         if (!await IsInformationValid(responseStream, userName, chatRoomId, "User not logged in"))
                         {
                             return;
@@ -53,7 +63,6 @@ namespace Chat.gRPC.Services
             await responseStream.WriteAsync(successMessage);
 
             await _chatRoomService.StreamClientJoinedRoomServerMessageAsync(chatRoomId, userName);
-
         }
 
         private async Task<bool> IsInformationValid(IServerStreamWriter<ServerMessage> responseStream, string userName, string chatRoomId, string reason)
