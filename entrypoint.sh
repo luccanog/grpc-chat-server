@@ -1,9 +1,10 @@
 #!/bin/sh
-echo '## entrypoint.sh script executing ##'
+echo '## Entrypoint ##'
 
 set -e
 
-service ssh start
+echo "Starting SSH ..."
+/usr/sbin/sshd
 
-
+echo "Starting Server ..."
 dotnet bin/Release/net7.0/Chat.gRPC.dll
