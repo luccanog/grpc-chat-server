@@ -3,6 +3,7 @@ using Chat.gRPC.Protos;
 using Chat.gRPC.Services;
 using Grpc.Core;
 using Grpc.Core.Testing;
+using Serilog;
 
 namespace Chat.gRPC.Tests.Services
 {
@@ -12,15 +13,17 @@ namespace Chat.gRPC.Tests.Services
         private readonly Mock<IAsyncStreamReader<ClientMessage>> _requestStreamMock;
         private readonly Mock<IServerStreamWriter<ServerMessage>> _responseStreamMock;
         private readonly Mock<IChatRoomService> _chatRoomServiceMock;
+        private readonly Mock<ILogger> _loggerMock;
         private readonly ChatServer _chatServer;
 
         public ChatServerTests()
         {
             _requestStreamMock = new Mock<IAsyncStreamReader<ClientMessage>>();
             _responseStreamMock = new Mock<IServerStreamWriter<ServerMessage>>();
+            _loggerMock = new Mock<ILogger>();
 
             _chatRoomServiceMock = new Mock<IChatRoomService>();
-            _chatServer = new ChatServer(_chatRoomServiceMock.Object);
+            _chatServer = new ChatServer(_chatRoomServiceMock.Object, _loggerMock.Object);
         }
 
         [Fact]

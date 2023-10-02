@@ -20,7 +20,6 @@ namespace Chat
             using var log = new LoggerConfiguration().WriteTo.Console().CreateLogger();
             builder.Services.AddSingleton<Serilog.ILogger>(log);
             log.Information("Done setting up serilog!");
-
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
