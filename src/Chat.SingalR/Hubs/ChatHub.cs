@@ -27,7 +27,7 @@ namespace Chat.SingalR.Controllers
 
             var stream = client.HandleCommunication();
 
-            await stream.RequestStream.WriteAsync(new ClientMessage { Login = new ClientMessageLogin { ChatRoomId = "123", UserName = "CDE" } });
+            await stream.RequestStream.WriteAsync(new ClientMessage { Login = new ClientMessageLogin { ChatRoomId = username, UserName = chatRoomId } });
         }
     }
 }
