@@ -11,7 +11,6 @@ namespace Chat.SingalR.Controllers
         private Dictionary<string, ChatService.ChatServiceClient> _grpcClients = new();
         public override async Task OnConnectedAsync()
         {
-
             if (!_grpcClients.ContainsKey(Context.ConnectionId))
             {
                 using var channel = GrpcChannel.ForAddress("https://localhost:7256");
@@ -25,7 +24,10 @@ namespace Chat.SingalR.Controllers
         public async Task LoginAsync(string username, string chatRoomId)
         {
             var client = _grpcClients[Context.ConnectionId];
-            await client.HandleCommunication(new ClientMessage { Login = new ClientMessageLogin { UserName = username, ChatRoomId = chatRoomId } });
+
+            var stream = client.HandleCommunication();
+
+            await stream.RequestStream.WriteAsync(new ClientMessage { Login = new ClientMessageLogin { ChatRoomId = "123", UserName = "CDE" } });
         }
     }
 }
